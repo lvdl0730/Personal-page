@@ -2,8 +2,8 @@
 import {reactive, ref, onMounted} from 'vue';
 import {message} from "ant-design-vue";
 import { useRouter} from "vue-router";
-import {getCaptcha, loginApi} from "../api/auth";
-import {useAuthState} from "../stores/auth";
+import {getCaptcha, loginApi} from "@/api/auth";
+import {useAuthStore} from "@/stores/auth";
 
 //登录表单类型定义
 type LoginForm = {
@@ -15,7 +15,7 @@ type LoginForm = {
 }
 
 const router = useRouter();
-const auth = useAuthState();
+const auth = useAuthStore();
 
 //把表单对象变成响应式是数据
 const form = reactive<LoginForm>({

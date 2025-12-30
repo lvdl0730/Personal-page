@@ -2,7 +2,7 @@
 import {onMounted, reactive, ref} from "vue";
 import {message} from "ant-design-vue";
 import type {FormInstance} from "ant-design-vue";
-import {getCaptcha,registerApi} from "../api/auth.ts";
+import {getCaptcha,registerApi} from "@/api/auth.ts";
 import {useRouter} from "vue-router";
 
 //注册表单类型定义

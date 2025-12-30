@@ -4,3 +4,26 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+# Web
+salvo = { version = "0.85", features = ["cors", "serve-static", "affix-state"] }
+tokio = { version = "1.42", features = ["macros", "rt-multi-thread", "time"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+
+# env
+dotenvy = "0.15"
+
+# MySQL (SQLx)
+sqlx = { version = "0.8", features = ["runtime-tokio", "mysql", "macros"] }
+
+# 验证码：生成 png
+captcha = "0.0.9"
+base64 = "0.22"
+rand = "0.8"
+
+# 并发安全的内存 map（存验证码答案）
+dashmap = "6"
+
+# 时间/过期
+chrono = { version = "0.4", features = ["clock"] }
