@@ -1,6 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router';
 import {useAuthStore} from "../stores/auth.ts";
-import {pinia} from "../stores";
+import {pinia} from "@/stores";
 
 //这三条不需要鉴权
 const Login = () => import("../views/auth/Login.vue");
@@ -43,20 +43,21 @@ router.beforeEach(async (to) => {
 
     //白名单：直接放行
     if (WHITE_LIST.includes(to.path)) {
-        //如果已经登录（本地有token）就直接跳过上面三个白名单页面，直接进入到/dashboard仪表盘页面
-        if (auth.token) return "/dashboard";
+        //如果已经登录（本地有token）就直接跳过上面三个白名单页面,有原目标页面送回去，没有就直接进入到/dashboard仪表盘页面
+        const redirect=(to.query.redirect as string)||"/dashboard;"
+        if (auth.token) return  redirect;
         return true;
     }
     //不是白名单:必须带有token
     if(!auth.token) {
         //没有token跳到登录页
-        return "/login";
+        return {path:"/login",query:{redirect:to.fullPath}};
     }
 
     //如果有token，第一次进入受保护的路由时，还需要取后端验证/me
     const ok=await auth.verifyTokenOnce();
     if (!ok) {
-        return "/login";
+        return {path:"/login",query:{redirect:to.fullPath}};
     }
 
     //验证通过，可以放行

@@ -213,7 +213,8 @@ async function onRegisterClick() {
                       class="captcha-img"
                       :src="captchaImgSrc"
                       alt="captcha"
-                      @click="refreshCaptchaImg"/>
+                      @click="refreshCaptchaImg"
+                      style="cursor: pointer"/>
                 </div>
               </a-form-item>
               <!--              提交注册-->

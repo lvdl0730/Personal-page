@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {reactive, ref, onMounted} from 'vue';
 import {message} from "ant-design-vue";
-import { useRouter} from "vue-router";
+import {useRouter,useRoute} from "vue-router";
 import {getCaptcha, loginApi} from "@/api/auth";
 import {useAuthStore} from "@/stores/auth";
 
@@ -16,6 +16,7 @@ type LoginForm = {
 
 const router = useRouter();
 const auth = useAuthStore();
+const route = useRoute();
 
 //把表单对象变成响应式是数据
 const form = reactive<LoginForm>({
@@ -44,6 +45,7 @@ async function refreshCaptchaImg() {
   }
 }
 
+//页面加载时自动拉取一张(onMounted)
 onMounted(() => {
   refreshCaptchaImg()
 });
@@ -74,7 +76,8 @@ async function onLoginClick() {
     auth.setToken(resp.token, form.remember);
 
     message.success("登录成功");
-    router.push("/dashboard");
+    const redirect = (route.query.redirect as string)||"/dashboard";
+    router.push(redirect);
   } catch (e: any) {
     message.error(e?.response?.data?.message || e?.response?.data || "登录失败");
     await refreshCaptchaImg();
@@ -152,7 +155,8 @@ async function onLoginClick() {
                       class="captcha-img"
                       :src="captchaImgSrc"
                       alt="captcha"
-                      @click="refreshCaptchaImg"/>
+                      @click="refreshCaptchaImg"
+                      style="cursor: pointer"/>
                 </div>
               </a-form-item>
 
