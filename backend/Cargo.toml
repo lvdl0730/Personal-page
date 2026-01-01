@@ -27,3 +27,13 @@ dashmap = "6"
 
 # 时间/过期
 chrono = { version = "0.4", features = ["clock"] }
+
+# 哈希算法
+argon2 = "0.5"
+#提供PasswordHash/verify等通用接口
+password-hash = "0.5"
+
+rand_core = "0.6"
+
+#JWT生成/校验（token）
+jsonwebtoken = "9"

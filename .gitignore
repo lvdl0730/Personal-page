@@ -34,6 +34,7 @@ pnpm-debug.log*
 # =========================
 deploy/docker-compose/mysql-data/
 deploy/docker-compose/postgres-data/
+deploy/docker-compose/migrations/002_users.sql
 **/mysql-data/
 **/postgres-data/
 **/*.pid

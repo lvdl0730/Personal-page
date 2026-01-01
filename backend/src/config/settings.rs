@@ -9,6 +9,9 @@ pub struct Settings {
     pub server_port: u16,
     pub database_url: String,
     pub debug_captcha: bool,
+    //JWT配置
+    pub jwt_secret: String,      //签名token的密钥
+    pub jwt_expire_seconds: i64, //token有效期
 }
 
 impl Settings {
@@ -31,11 +34,20 @@ impl Settings {
             .trim()
             == "true";
 
+        let jwt_secret =
+            env::var("JWT_SECRET").map_err(|_| anyhow::anyhow!("缺少环境变量JWT_SECRET"))?;
+
+        let jwt_expire_seconds = env::var("JWT_EXPIRE_SECONDS")
+            .unwrap_or_else(|_| "604800".to_string())
+            .parse::<i64>()?;
+
         Ok(Self {
             server_host,
             server_port,
             database_url,
             debug_captcha,
+            jwt_secret,
+            jwt_expire_seconds,
         })
     }
 }

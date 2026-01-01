@@ -1,3 +1,4 @@
+use std::sync::Arc;
 //AppState：数据库连接池 + 验证码存储
 use chrono::{DateTime, Utc};
 use dashmap::DashMap;
@@ -17,7 +18,7 @@ pub struct CaptchaStore {
     pub map: DashMap<String, CaptchaEntry>,
 }
 impl CaptchaStore {
-    //写入验证码
+    //插入一条验证码记录
     pub fn insert(&self, id: String, entry: CaptchaEntry) {
         self.map.insert(id, entry);
     }
@@ -28,12 +29,12 @@ impl CaptchaStore {
     pub fn verify_and_consume(&self, id: &str, user_input: &str) -> bool {
         let now = Utc::now();
 
-        //没找到
+        //没找到captcha_id
         let Some(entry) = self.map.get(id) else {
             return false;
         };
 
-        //过期
+        //有id但是过期了
         if entry.expires_at < now {
             //删掉
             drop(entry);
@@ -41,7 +42,7 @@ impl CaptchaStore {
             return false;
         }
 
-        //忽略大小写+去空格
+        //校验答案：忽略大小写+去空格
         let ok = entry.answer.eq_ignore_ascii_case(user_input.trim());
 
         drop(entry);
@@ -64,6 +65,9 @@ impl CaptchaStore {
 #[derive(Clone)]
 pub struct AppState {
     pub db: Pool<MySql>,
-    pub captcha_store: CaptchaStore,
+    pub captcha_store: Arc<CaptchaStore>,
     pub debug_captcha: bool,
+    //JWT配置*登录注册接口需要用
+    pub jwt_secret: String,
+    pub jwt_expire_seconds: i64,
 }

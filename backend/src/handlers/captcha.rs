@@ -9,13 +9,12 @@ use crate::state::{AppState, CaptchaEntry};
 #[derive(Serialize)]
 struct CaptchaResp {
     captcha_id: String,
-    //前端img形式<img :src="image_base64" />
-    image_base64: String,
+    image: String,
     //多少秒后过期
     expires_in: i64,
-    //直接把答案展示出来，正式使用时删掉这部分
-    #[serde(skip_serializing_if = "Option::is_none")]
-    debug_answer: Option<String>,
+    // //直接把答案展示出来，正式使用时删掉这部分
+    // #[serde(skip_serializing_if = "Option::is_none")]
+    // debug_answer: Option<String>,
 }
 
 //生成验证码：图片+id+服务端存储答案
@@ -34,7 +33,7 @@ pub async fn get_captcha(depot: &Depot) -> Json<CaptchaResp> {
     let mut cap = captcha::Captcha::new();
     cap.add_chars(5);
     let answer = cap.chars_as_string(); //取出答案后存储
-    let png_bytes = cap.view(120, 42).as_png().expect("生成验证码图片失败");
+    let png_bytes = cap.view(180, 60).as_png().expect("生成验证码图片失败");
 
     //服务端保存答案
     let expires_in = 120; //过期时间120s
@@ -46,17 +45,17 @@ pub async fn get_captcha(depot: &Depot) -> Json<CaptchaResp> {
 
     //base64：前端可以直接显示
     let b64 = general_purpose::STANDARD.encode(png_bytes);
-    let image_base64 = format!("data:image/png;base64,{}", b64);
+    let image = format!("data:image/png;base64,{}", b64);
 
     Json(CaptchaResp {
         captcha_id,
-        image_base64,
+        image,
         expires_in,
-        debug_answer: if state.debug_captcha {
-            Some(answer)
-        } else {
-            None
-        },
+        // debug_answer: if state.debug_captcha {
+        //     Some(answer)
+        // } else {
+        //     None
+        // },
     })
 }
 

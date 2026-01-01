@@ -62,7 +62,7 @@ export const useAuthStore = defineStore("auth", {
             if (remember) {
                 localStorage.setItem(LS_KEY, token);
             } else {
-                sessionStorage.setItem(LS_KEY, token);
+                sessionStorage.setItem(SS_KEY, token);
             }
         },
 

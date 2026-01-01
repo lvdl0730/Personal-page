@@ -1,12 +1,14 @@
 //Axios实例和拦截器
 
 import axios from 'axios';
-import {message} from "ant-design-vue";
-import {useAuthStore} from "../stores/auth";
-import {pinia} from "../stores";
+import { message } from "ant-design-vue";
+import { useAuthStore } from "../stores/auth";
+import { pinia } from "@/stores";
+
+const baseURL =  "";
 
 const request = axios.create({
-    baseURL: import.meta.env.VUE_APP_API_URL || "",
+    baseURL,
     timeout: 10000,
 });
 
@@ -27,12 +29,30 @@ request.interceptors.request.use((config) => {
 request.interceptors.response.use(
     (resp) => resp,
     (err) => {
-        const status = err?.response?.status;
+        if (!err?.response) {
+            message.error("网络错误，无法连接服务器");
+            return Promise.reject(err);
+        }
+
+        const status = err.response.status;
+        //尝试从后端拿message
+        const backendMsg: string | undefined = err.response.data?.message;
+
         if (status == 401) {
             const auth = useAuthStore(pinia);
             auth.logout();
-            message.warning("登录已失效，请重新登录");
+            message.warning(backendMsg || "登录已失效，请重新登录");
+        } else if (status === 400) {
+            message.warning(backendMsg || "请求参数错误");
+        } else if (status === 409) {
+            message.warning(backendMsg || "数据冲突（可能用户名/邮箱已存在）");
+        } else if (status >= 500) {
+            message.error(backendMsg || "服务器错误");
+        } else {
+            // 其他状态码：兜底提示
+            message.warning(backendMsg || `请求失败(${status})`);
         }
+
         return Promise.reject(err);
     }
 );
